@@ -29,12 +29,11 @@ public class Main_webSh {
                 .userName("websh")
                 .comment("выводим все данные из таблицы")
                 .dataCreateUser(LocalDateTime.now())
-                .psswordUser(123)
+                .psswordUser("password")
                 .build();
 
 
         ProductEntity productEntity = ProductEntity.builder()
-//                .productId(UUID.randomUUID())
                 .product_name("фиговина")
                 .productCategory("хернюшки")
                 .productArticul("арт.125")
@@ -49,9 +48,6 @@ public class Main_webSh {
 
 usersEntity.setProductEntity(new ArrayList<>(Arrays.asList(productEntity)));
 
-        TestService testService = contex.getBean(TestService.class);
-
-        testService.getDataTest(usersEntity, productEntity);
     }
 
 

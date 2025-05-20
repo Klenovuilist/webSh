@@ -2,6 +2,18 @@ databaseChangeLog:
   - include:
       author: EV
       file: changelog/changeset/1-newTable-User-product.sql
+
+  - include:
+      author: EV
+      file: changelog/changeset/2-newTable-TestData.sql
+
+  - include:
+      author: EV
+      file: changelog/changeset/3-alter User change colum password.sql
+
+
+
+
 #
 #  - include:
 #      author: EV
