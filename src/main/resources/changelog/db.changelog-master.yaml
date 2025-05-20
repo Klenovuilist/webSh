@@ -1,7 +1,7 @@
 databaseChangeLog:
-#  - include:
-#      author: EV
-#      file: db/changelog/changeset/newTable.sql
+  - include:
+      author: EV
+      file: changelog/changeset/1-newTable-User-product.sql
 #
 #  - include:
 #      author: EV
