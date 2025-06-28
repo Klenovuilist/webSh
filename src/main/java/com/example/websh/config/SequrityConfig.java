@@ -79,7 +79,7 @@ public class SequrityConfig {
                                 .requestMatchers(HttpMethod.PUT, "/api/save_test_data/**").permitAll()  // Открытый доступ к публичным ресурсам /authorize
                                 .requestMatchers("/api/delete/test_data/**").hasRole("ADMIN")              // Доступ  только для администраторов
                                 .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")     // Пользователи и администраторы имеют доступ к "/api/user/**"
-//                        .anyRequest().authenticated()             // остальные маршруты доступны только для после аутентификации
+                        .anyRequest().authenticated()             // остальные маршруты доступны только для после аутентификации
                 )
                 .csrf(AbstractHttpConfigurer::disable) // отключение CSRF-защиты
                 /*.csrf(AbstractHttpConfigurer::disable)*/
@@ -100,6 +100,95 @@ public class SequrityConfig {
 
         return httpSecurity.build();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

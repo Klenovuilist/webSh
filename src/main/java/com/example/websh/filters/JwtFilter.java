@@ -50,10 +50,17 @@ public class JwtFilter extends OncePerRequestFilter {
                 userRole = jwtService.getUserRole(tokenJwt);
             }
             catch (io.jsonwebtoken.SignatureException ex){
-                throw new NoValidRequest("токен некорректный");
+                response.addHeader("JWToken","no_valid");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "токен некорректный"); // отправка ответа клиенту при ошибке
+                return;
+//                throw new NoValidRequest("токен некорректный");
+
             }
             catch (ExpiredJwtException e) {
-                throw new NoValidRequest("время жизни токена вышло");
+                response.addHeader("JWToken","out_of_time");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "время жизни токена вышло");
+                return;
+//                throw new NoValidRequest("время жизни токена вышло");
             }
 
             // проверка наличия в контексте секьюрити объекта Authentication, если нет то создаем новго

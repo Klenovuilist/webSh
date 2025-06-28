@@ -24,7 +24,7 @@ import java.util.Map;
 public class JwtService {
 
     private Key key;
-    private final Duration jwtLifeTime =Duration.ofMinutes(30); //время жизни токена 30 мин
+    private final Duration jwtLifeTime =Duration./*ofMinutes(300)*/ofSeconds(1); //время жизни токена 30 мин
 
     @PostConstruct
     public void initialize() {

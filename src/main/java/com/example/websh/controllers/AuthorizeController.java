@@ -81,9 +81,9 @@ public class AuthorizeController {
             // данным логином и паролем(используется UserService implements UserDetailsService)
             // если пользователь найден то возврщ. Authentication содержащий все данные о пользаователе
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-//                    userDtoAuthen.getUserLogin(), // имя пользователя
-//                    userDtoAuthen.getPasswordUser()// пароль пользователя
-                    "rita", "123"
+                    userDtoAuthen.getUserLogin(), // имя пользователя
+                    userDtoAuthen.getPasswordUser()// пароль пользователя
+//                    "rita", "123"
             ));
             System.out.println(authentication.getName());//имя пользователя ппрошедшего аутентифик
             System.out.println(authentication.getAuthorities());// роли
@@ -104,10 +104,9 @@ public class AuthorizeController {
             return new ResponseEntity<>(new ErrorAuthDto(HttpStatus.UNAUTHORIZED.value(), "Неверный логин или пароль"), HttpStatus.UNAUTHORIZED);
         }
     }
-        @PreAuthorize("permitAll()")
+//        @PreAuthorize("permitAll()")
         @GetMapping("/api/login")
         public String loginPage(){
         return "form login";
         }
-
 }

@@ -3,7 +3,7 @@ package com.example.websh.exceptions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
-@ControllerAdvice
+@ControllerAdvice // перехватчик ошибок в контроллере, в фильтрах не срабатывает
 public class ExceptionHandler {
     /**
      * Обработчик ошибок типа NoValidRequest
