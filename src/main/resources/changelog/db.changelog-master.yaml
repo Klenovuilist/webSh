@@ -11,6 +11,13 @@ databaseChangeLog:
       author: EV
       file: changelog/changeset/3-alter User change colum password.sql
 
+  - include:
+      author: EV
+      file: changelog/changeset/4-alter-User-add-col_mail.sql
+
+  - include:
+      author: EV
+      file: changelog/changeset/5-newTable-GroupsProduct.sql
 
 
 
