@@ -30,7 +30,7 @@ public class GroupsService {
            return defoultGruopDto();
        }
 
-       return getStructureListGroup(mapGroupEntityToDto(listGroupEntity));
+       return getStructureListGroup(mapGroupAllEntityListToDto(listGroupEntity));
     }
 
     /**
@@ -75,7 +75,7 @@ public class GroupsService {
                .build());
 
        // структурированный лист
-        return  getStructureListGroup(mapGroupEntityToDto(groupRepository.findAll()));
+        return  getStructureListGroup(mapGroupAllEntityListToDto(groupRepository.findAll()));
 
     }
 
@@ -115,17 +115,12 @@ public class GroupsService {
     /**
      * преобразование в List<GroupProductDto> из List<GroupProductEntity>
      */
-    private List<GroupProductDto> mapGroupEntityToDto(List<GroupProductEntity> listGroupEntities){
+    private List<GroupProductDto> mapGroupAllEntityListToDto(List<GroupProductEntity> listGroupEntities){
 
         List<GroupProductDto>listGroupDto = new ArrayList<>();
-
+        //преобразование сущностей в дто
         listGroupEntities.forEach(groupEntities ->{
-                                listGroupDto.add(GroupProductDto.builder()
-                                    .parrentId(groupEntities.getParrentId())
-                                     .groupId(groupEntities.getGroupId())
-                                    .levelGroup(groupEntities.getLevelGroup())
-                                    .groupName(groupEntities.getGroupName())
-                            .build());
+                                listGroupDto.add(mapGroupEntityToDto(groupEntities));
                                 });
 //добавление в листы родителей дочерниние группы
         for (GroupProductDto groupDto: listGroupDto){
@@ -148,6 +143,17 @@ public class GroupsService {
         return listGroupDtoResult;
     }
 
+
+    private GroupProductDto mapGroupEntityToDto(GroupProductEntity groupEntity){
+
+        return GroupProductDto.builder()
+                .parrentId(groupEntity.getParrentId())
+                .groupId(groupEntity.getGroupId())
+                .levelGroup(groupEntity.getLevelGroup())
+                .groupName(groupEntity.getGroupName())
+                .build();
+
+    }
 
 
 
@@ -219,6 +225,7 @@ public class GroupsService {
         groupRepository.deleteById(UUID.fromString(uuid));
     }
 
+    @Transactional
     public void updateGroupEntity(GroupProductDto groupDto) {
 
         UUID groupId = groupDto.getGroupId();
@@ -305,6 +312,7 @@ public class GroupsService {
             }
 
             groupRepository.saveAll(updateLevelGroup(entityList));
+            groupRepository.flush();
 
 //            groupRepository.saveAll(entityList); // сохранить сущности
 
@@ -341,5 +349,18 @@ public class GroupsService {
             return resultList;
         }
 
+    /**
+     * Получить группу по id
+     */
+    public GroupProductDto getGroupById(UUID groupsId) {
+
+        GroupProductEntity groupEntity = groupRepository.findById(groupsId).orElse(null);
+
+        if(Objects.nonNull(groupEntity)){
+
+            return mapGroupEntityToDto(groupEntity);
+        }
+        return new GroupProductDto();
     }
+}
 

@@ -25,9 +25,8 @@ public class ProductEntity {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY) //не генерится в базе
     private UUID productId;
-
 
     @Column(name = "product_name")
     private String product_name;
@@ -45,16 +44,19 @@ public class ProductEntity {
     private String productDescription;
 
     @Column(name = "product_coast")
-    private Double productCoast;
+    private String productCoast;
 
     @Column(name = "product_count")
-    private int productCount;
+    private String productCount;
 
     @Column(name = "product_reserv")
     private int productReserv;
 
     @ManyToMany(mappedBy = "productEntity")
     private List<UsersEntity> usersEntity;
+
+    @Column(name = "id_groups")
+    private UUID groupsId;
 
 
     @Column(name = "data_create_product")

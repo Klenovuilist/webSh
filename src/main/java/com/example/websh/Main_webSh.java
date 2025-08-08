@@ -24,29 +24,29 @@ public class Main_webSh {
         System.out.println("Загрузка контекста");
 
 
-        UsersEntity usersEntity = UsersEntity.builder()
-                .roleUser("ADMIN")
-                .userName("websh")
-                .comment("выводим все данные из таблицы")
-                .dataCreateUser(LocalDateTime.now())
-                .psswordUser("password")
-                .build();
+//        UsersEntity usersEntity = UsersEntity.builder()
+//                .roleUser("ADMIN")
+//                .userName("websh")
+//                .comment("выводим все данные из таблицы")
+//                .dataCreateUser(LocalDateTime.now())
+//                .psswordUser("password")
+//                .build();
+//
+//
+//        ProductEntity productEntity = ProductEntity.builder()
+//                .product_name("фиговина")
+//                .productCategory("хернюшки")
+//                .productArticul("арт.125")
+//                .productCount(10)
+//                .data_create_product(LocalDateTime.now())
+//                .productCoast(200.3)
+//                .productReserv(3)
+//                .productDescription("фиговина хернюшечная красивая")
+//                .productReference("www.dsdsdd")
+//                .usersEntity(new ArrayList<>(Arrays.asList(usersEntity)))
+//                .build();
 
-
-        ProductEntity productEntity = ProductEntity.builder()
-                .product_name("фиговина")
-                .productCategory("хернюшки")
-                .productArticul("арт.125")
-                .productCount(10)
-                .data_create_product(LocalDateTime.now())
-                .productCoast(200.3)
-                .productReserv(3)
-                .productDescription("фиговина хернюшечная красивая")
-                .productReference("www.dsdsdd")
-                .usersEntity(new ArrayList<>(Arrays.asList(usersEntity)))
-                .build();
-
-usersEntity.setProductEntity(new ArrayList<>(Arrays.asList(productEntity)));
+//usersEntity.setProductEntity(new ArrayList<>(Arrays.asList(productEntity)));
 
     }
 

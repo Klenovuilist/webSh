@@ -1,6 +1,5 @@
 package com.example.websh.controllers;
 
-import com.example.websh.dto.UserDtoAuthen;
 import com.example.websh.entity.TestEntity;
 import com.example.websh.services.TestService;
 import org.springframework.http.HttpEntity;
@@ -12,11 +11,11 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-public class TestController {
+public class TestControllerREST {
 
     private final TestService testService;
 
-    public TestController(TestService testService) {
+    public TestControllerREST(TestService testService) {
         this.testService = testService;
     }
 
@@ -25,6 +24,9 @@ public class TestController {
     public String index() {
         return "index BACKEND 123123132\n 123123132\n123123132\n123123132\n123123132\n";
     }
+
+
+
 
     @PostMapping("/api/test_request_on_back")
     public HttpEntity<String> testRequest() {

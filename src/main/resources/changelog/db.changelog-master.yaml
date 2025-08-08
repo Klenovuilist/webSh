@@ -20,6 +20,10 @@ databaseChangeLog:
       file: changelog/changeset/5-newTable-GroupsProduct.sql
 
 
+  - include:
+      author: EV
+      file: changelog/changeset/6-alter-product.sql
+
 
 #
 #  - include:

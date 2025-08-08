@@ -72,6 +72,7 @@ public class SequrityConfig {
         httpSecurity
                 .authorizeHttpRequests((authz) -> authz
 //                                .requestMatchers(HttpMethod.GET,"/api/login/**").permitAll()
+                                .requestMatchers(HttpMethod.GET,"/api/test/**").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/api/get_testData/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/authorize_user/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/test_entity/**").permitAll()                   // Открытый доступ к публичным ресурсам
