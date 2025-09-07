@@ -15,6 +15,4 @@ public class ExceptionHandler {
             return ResponseEntity.badRequest().body(noValidRequest.getMessage());//при ошибке вернем ResponseEntity с  сообщением ошибки
     }
 
-
-
 }

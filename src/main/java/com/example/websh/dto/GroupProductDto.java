@@ -19,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 
 
-public class GroupProductDto implements Serializable {
+public class GroupProductDto implements Serializable, Comparable {
 
     public GroupProductDto() {
 
@@ -50,5 +50,14 @@ public class GroupProductDto implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(groupId);
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if (!(o instanceof GroupProductDto)) {
+            throw new ClassCastException("Нельзя сравнить объекты разного типа.");
+        }
+        GroupProductDto otherGroup = (GroupProductDto) o; //привидение типа
+        return this.groupName.compareTo(otherGroup.groupName);
     }
 }

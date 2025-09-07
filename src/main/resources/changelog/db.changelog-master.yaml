@@ -25,6 +25,33 @@ databaseChangeLog:
       file: changelog/changeset/6-alter-product.sql
 
 
+  - include:
+      author: EV
+      file: changelog/changeset/7-newTable-main_info.sql
+
+  - include:
+      author: EV
+      file: changelog/changeset/8-alter-product.sql
+
+  - include:
+      author: EV
+      file: changelog/changeset/9-alter-user.sql
+
+
+  - include:
+      author: EV
+      file: changelog/changeset/10-new-tadle-file.sql
+
+  - include:
+      author: EV
+      file: changelog/changeset/11-alter-user-login.sql
+
+  - include:
+      author: EV
+      file: changelog/changeset/12-alter-product_teg.sql
+
+
+
 #
 #  - include:
 #      author: EV

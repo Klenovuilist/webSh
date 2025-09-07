@@ -1,5 +1,6 @@
 package com.example.websh.entity;
 
+import com.example.websh.dto.GroupProductDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = "groups_product")
 
-public class GroupProductEntity {
+public class GroupProductEntity implements Comparable{
 
     public GroupProductEntity() {
 
@@ -40,7 +41,15 @@ public class GroupProductEntity {
     private int levelGroup;
 
 
-
+    //Срванение групп
+    @Override
+    public int compareTo(Object o) {
+        if (!(o instanceof GroupProductEntity)) {
+            throw new ClassCastException("Нельзя сравнить объекты разного типа.");
+        }
+        GroupProductEntity otherGroup = (GroupProductEntity) o; //привидение типа
+        return this.groupName.compareTo(otherGroup.groupName);
+    }
 
 
 }

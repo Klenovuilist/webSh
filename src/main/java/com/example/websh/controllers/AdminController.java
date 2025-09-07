@@ -1,8 +1,10 @@
 package com.example.websh.controllers;
 
 import com.example.websh.dto.GroupProductDto;
+import com.example.websh.dto.MainInfoDto;
 import com.example.websh.dto.ProductDto;
 import com.example.websh.services.GroupsService;
+import com.example.websh.services.MainInfoService;
 import com.example.websh.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +30,8 @@ public class AdminController {
     private final GroupsService groupsService;
 
     private final ProductService productService;
+
+    private  final MainInfoService mainInfoService;
 
     private List<GroupProductDto> groupList = new ArrayList<>();
 
@@ -41,13 +44,14 @@ public class AdminController {
 
 
     @PutMapping("/api/create_group/{id}")
-    void createGroup(@PathVariable("id") String parrentUuid){
+    ResponseEntity<UUID> createGroup(@PathVariable("id") String parrentUuid){
 // создание групп
-        groupsService.crateNewGroup(parrentUuid);
+       UUID uuidNewgroup = groupsService.crateNewGroup(parrentUuid);
 
         //обновление листа групп
         groupList = groupsService.getListGroup();
 
+        return ResponseEntity.ok(uuidNewgroup);
     }
 
     /**
@@ -56,9 +60,7 @@ public class AdminController {
     @GetMapping("/api/get_list_group")
     public ResponseEntity<List<GroupProductDto>> getListGroup(){
 
-        if (groupList.isEmpty()){
-            groupList = groupsService.getListGroup();
-        }
+         groupList = groupsService.getListGroup();
 
         return ResponseEntity.ok(groupList);
     }
@@ -285,32 +287,34 @@ public class AdminController {
     @PostMapping("/api/ListNameImageProduct/{id}")
     public ResponseEntity<List<String>> getListNameImageProductById(@PathVariable("id") String uuid) {
 
-        try {
-            File folder = new File(pathToSaveProduct + uuid);// ссылка на папку с файлами картинок
+        return ResponseEntity.ok(productService.getListNameImage(uuid));
 
-            if (folder.exists()){
-                // лист имен файлов для ID продукта
-                List<String> listfileImage = Arrays.stream(Objects.requireNonNull(folder.listFiles()))//картинка для группы по uuid
-                        .map(File::getName)
-                        .toList();
-                return ResponseEntity.ok(listfileImage);
-            }
-            else {
-                // если папки нет то искать в родительской папке
-                File folderDefoult = new File(pathToSaveProduct);// ссылка на папку с файлами картинок по умолчанию
-
-                // лист имен файлов для ID продукта
-                List<String> listfileImage = Arrays.stream(Objects.requireNonNull(folderDefoult.listFiles()))
-                        .findFirst()
-                        .map(file -> Collections.singletonList(file.getName())) // Получаем первый любой файл из списка
-                        .orElse(Collections.emptyList());
-
-                return ResponseEntity.ok(listfileImage);
-            }
-        }
-        catch (RuntimeException e) {
-            return ResponseEntity.ok(new ArrayList<>());
-        }
+//        try {
+//            File folder = new File(pathToSaveProduct + uuid);// ссылка на папку с файлами картинок
+//
+//            if (folder.exists()){
+//                // лист имен файлов для ID продукта
+//                List<String> listfileImage = Arrays.stream(Objects.requireNonNull(folder.listFiles()))//картинка для группы по uuid
+//                        .map(File::getName)
+//                        .toList();
+//                return ResponseEntity.ok(listfileImage);
+//            }
+//            else {
+//                // если папки нет то искать в родительской папке
+//                File folderDefoult = new File(pathToSaveProduct);// ссылка на папку с файлами картинок по умолчанию
+//
+//                // лист имен файлов для ID продукта
+//                List<String> listfileImage = Arrays.stream(Objects.requireNonNull(folderDefoult.listFiles()))
+//                        .findFirst()
+//                        .map(file -> Collections.singletonList(file.getName())) // Получаем первый любой файл из списка
+//                        .orElse(Collections.emptyList());
+//
+//                return ResponseEntity.ok(listfileImage);
+//            }
+//        }
+//        catch (RuntimeException e) {
+//            return ResponseEntity.ok(new ArrayList<>());
+//        }
     }
 
 
@@ -337,5 +341,46 @@ public class AdminController {
         productService.deleteProduct(uuidProduct); //удаление продукта
 
         return ResponseEntity.ok(groupDto);
+    }
+
+
+    /**
+     * Удалить картинку продукта
+     */
+    @GetMapping("/api/del/image/{productId}/{nameImage}")
+    public ResponseEntity<?> deleteImageProduct(@PathVariable("productId") String uuidProduct
+    , @PathVariable("nameImage") String nameImage){
+
+
+         productService.deleteImageProduct(uuidProduct, nameImage); //удаление
+
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Получить инфо дто
+     */
+    @GetMapping("/api/getInfo")
+    public ResponseEntity<Map<Long, MainInfoDto>> getInfo(){
+
+        return ResponseEntity.ok(mainInfoService.getInfo());
+    }
+
+    /**
+     * Сохранить инфо дто и вернуть id записи
+     */
+    @PostMapping("/api/saveInfo")
+    public ResponseEntity<Long> getInfo(@RequestBody MainInfoDto mainInfoDto){
+
+        return ResponseEntity.ok(mainInfoService.saveInfo(mainInfoDto));
+    }
+
+    /**
+     * Получить продукты без группы
+     */
+    @GetMapping("api/list_product/non_group")
+    public ResponseEntity<List<ProductDto>> getProductNonGroup(){
+
+        return ResponseEntity.ok(productService.getListProductByIdGroup(null));
     }
 }

@@ -1,9 +1,12 @@
 package com.example.websh.services;
 
+import com.example.websh.copmparator.ComparatorGroup;
 import com.example.websh.dto.GroupProductDto;
 import com.example.websh.entity.GroupProductEntity;
+import com.example.websh.entity.ProductEntity;
 import com.example.websh.exceptions.ExceptionRepository;
 import com.example.websh.repository.GroupRepository;
+import com.example.websh.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +19,11 @@ import java.util.stream.Collectors;
 public class GroupsService {
 
     private final GroupRepository groupRepository;
-    private int i = 1;
+
+    private final ProductRepository productRepository;
+
+
+    private int i = 1; //счетчик номера вновь созданной группы
 
     /**
      * Получение развернутого листа GroupProductDto
@@ -30,7 +37,15 @@ public class GroupsService {
            return defoultGruopDto();
        }
 
-       return getStructureListGroup(mapGroupAllEntityListToDto(listGroupEntity));
+       ComparatorGroup comparatorGroup = new ComparatorGroup(); // компаратор для сравнения по префиксу имени группы
+
+       List<GroupProductEntity> sortListGroupEntity = listGroupEntity.stream().sorted(comparatorGroup).collect(Collectors.toList());
+
+//       List<GroupProductDto> groupProductDtoList = getStructureListGroup(mapGroupAllEntityListToDto(sortListGroupEntity));
+
+
+//       return groupProductDtoList;
+        return mapGroupAllEntityListToDto(sortListGroupEntity);
     }
 
     /**
@@ -122,27 +137,32 @@ public class GroupsService {
         listGroupEntities.forEach(groupEntities ->{
                                 listGroupDto.add(mapGroupEntityToDto(groupEntities));
                                 });
-//добавление в листы родителей дочерниние группы
-        for (GroupProductDto groupDto: listGroupDto){
-                    if (Objects.isNull(groupDto.getParrentId())) {
-                        continue;
-                    }
-                    //поиск родителя
-                    Optional<GroupProductDto> optionalGroupDto = listGroupDto.stream()
-                            .filter(gr -> gr.getGroupId().equals(groupDto.getParrentId()))
-                            .findFirst();
+////добавление в листы родителей дочерниние группы
+//        for (GroupProductDto groupDto: listGroupDto){
+//                    if (Objects.isNull(groupDto.getParrentId())) {
+//                        continue;
+//                    }
+//                    //поиск родителя
+//                    Optional<GroupProductDto> optionalGroupDto = listGroupDto.stream()
+//                            .filter(gr -> gr.getGroupId().equals(groupDto.getParrentId()))
+//                            .findFirst();
+//
+//                     //добавление группы в родителя
+//                            optionalGroupDto
+//                                    .ifPresent(gr -> gr.getListUnderGroups().add(groupDto));
+//        }
+//        //лист GroupProductDto только из начальных групп
+//         List<GroupProductDto> listGroupDtoResult = listGroupDto.stream()
+//                 .filter(gr -> Objects.isNull(gr.getParrentId())).toList();
 
-                     //добавление группы в родителя
-                            optionalGroupDto
-                                    .ifPresent(gr -> gr.getListUnderGroups().add(groupDto));
-        }
-        //лист GroupProductDto только из начальных групп
-         List<GroupProductDto> listGroupDtoResult = listGroupDto.stream()
-                 .filter(gr -> Objects.isNull(gr.getParrentId())).toList();
-
-        return listGroupDtoResult;
+//        return listGroupDtoResult;
+        return listGroupDto;
     }
 
+
+    /**
+     * преобразование в GroupProductDto> из GroupProductEntity
+     */
 
     private GroupProductDto mapGroupEntityToDto(GroupProductEntity groupEntity){
 
@@ -194,18 +214,20 @@ public class GroupsService {
      * */
     @Transactional
     public void deleteGroup(String uuid) {
-        //Todo добавить удаление продуктов или их перекладку из удаленной группы
+
+
         List<GroupProductEntity>listFromBD = groupRepository.findAll();
 
+        // группа для удаления
         GroupProductEntity groupDel =  listFromBD.stream()
                 .filter(gr -> gr.getGroupId().equals(UUID.fromString(uuid)))
                 .findFirst().orElse(null);
         if (Objects.isNull(groupDel)){
             return;
         }
-        UUID uuidParent = groupDel.getParrentId();
+        UUID uuidParent = groupDel.getParrentId(); // id родителя группы на удаление
 
-
+// дочерняя группа при наличии
         GroupProductEntity childGroup = listFromBD.stream()
                 .filter(gr ->Objects.nonNull(gr.getParrentId()) && gr.getParrentId().equals(UUID.fromString(uuid)))
                 .findFirst()
@@ -213,17 +235,47 @@ public class GroupsService {
 
         if(Objects.isNull(childGroup)){
             groupRepository.deleteById(UUID.fromString(uuid));
+        }
+        else {
+            childGroup.setParrentId(uuidParent);
+            listFromBD.remove(groupDel);
+            listFromBD = updateLevelGroup(listFromBD);
+
+            groupRepository.saveAll(listFromBD);
+            groupRepository.deleteById(UUID.fromString(uuid));
+        }
+
+        //получить продукты и установить или обнулить группу
+        List<ProductEntity> listProductEntity = productRepository.findAllByGroupsId(UUID.fromString(uuid));
+        if (listProductEntity.isEmpty()){
             return;
+        }
+        //создание если нет свалки, куда переложить продукты без группы
+        if (Objects.isNull(uuidParent)){
+            GroupProductEntity svalka = groupRepository.findByNameGroup("Свалка").orElse(null);
+
+            if(Objects.isNull(svalka)){
+                svalka = GroupProductEntity.builder()
+                        .groupName("Свалка")
+                        .levelGroup(0)
+                        .build();
+                groupRepository.save(svalka);  // сохранить новую свалку
+            }
+
+            uuidParent = svalka.getGroupId();
+        }
+        for (ProductEntity product: listProductEntity){ // установка новых значений групп для продуктов
+                product.setGroupsId(uuidParent);
+        }
+        productRepository.saveAll(listProductEntity);
+        productRepository.flush();
+
         }
 
 
-        childGroup.setParrentId(uuidParent);
-        listFromBD.remove(groupDel);
-        listFromBD = updateLevelGroup(listFromBD);
-
-        groupRepository.saveAll(listFromBD);
-        groupRepository.deleteById(UUID.fromString(uuid));
-    }
+    /**
+     * обновление группы
+     * */
 
     @Transactional
     public void updateGroupEntity(GroupProductDto groupDto) {
@@ -234,7 +286,7 @@ public class GroupsService {
 
         UUID newParrentId = groupDto.getParrentId();
 
-        UUID newSlaveId = groupDto.getSlaveId();
+//        UUID newSlaveId = groupDto.getSlaveId();
 
         int newLevelGroup = 0;
 
@@ -261,7 +313,16 @@ public class GroupsService {
             groupChange.setGroupName(newGroupName);
         }
 
-        if (newParrentId != null) {
+        if(newParrentId == null){
+            groupChange.setParrentId(null);
+            groupChange.setLevelGroup(0);
+            groupRepository.saveAll(updateLevelGroup(entityList));
+            groupRepository.flush();
+
+        }
+
+      //Обновляем родителя если:
+        if (newParrentId != null && ! newParrentId.equals(groupId)) {
             // новый родитель из бд
             GroupProductEntity newParrent = entityList.stream()
                     .filter(entity -> entity.getGroupId().equals(newParrentId))
@@ -307,9 +368,9 @@ public class GroupsService {
             groupChange.setLevelGroup(newParrent.getLevelGroup() + 1);
 
 
-            if (newSlaveId != null) {
-                optGroupEntityForChange.get().setSlaveId(newSlaveId);
-            }
+//            if (newSlaveId != null) {
+//                optGroupEntityForChange.get().setSlaveId(newSlaveId);
+//            }
 
             groupRepository.saveAll(updateLevelGroup(entityList));
             groupRepository.flush();
@@ -319,6 +380,10 @@ public class GroupsService {
         }
     }
 
+
+    /**
+     * изменение уровня групп
+     * */
     private List<GroupProductEntity> updateLevelGroup(List<GroupProductEntity> noUpdateList){
 
         List<GroupProductEntity> resultList = new ArrayList<>();
@@ -353,6 +418,10 @@ public class GroupsService {
      * Получить группу по id
      */
     public GroupProductDto getGroupById(UUID groupsId) {
+
+        if (Objects.isNull(groupsId)){
+            return null;
+        }
 
         GroupProductEntity groupEntity = groupRepository.findById(groupsId).orElse(null);
 
