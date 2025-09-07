@@ -1,28 +1,19 @@
 package com.example.websh.controllers;
 
-import com.example.websh.dto.ErrorAuthDto;
-import com.example.websh.dto.JwtDto;
-import com.example.websh.dto.UserDtoAuthen;
-import com.example.websh.entity.UsersEntity;
-import com.example.websh.services.JwtService;
+import com.example.websh.dto.UserDto;
+
 import com.example.websh.services.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 
 /**
- * Контроллер авторизации и регистрации,получения токена
+ * Контроллер User
  */
 @RestController
 @AllArgsConstructor
@@ -30,83 +21,56 @@ public class AuthorizeController {
 
     private final UserService userService;
 
-    private final JwtService jwtService;
 
-    private final AuthenticationManager authenticationManager; // проводит аутентификацию пользовотеля
+    /**
+     *  получить пользователя по ID
+     */
+    @GetMapping("api/userId/{userId}")
+    public ResponseEntity<UserDto> getUserById (@PathVariable("userId") String userId) {
 
-//    @PreAuthorize("\"permitAll()\"")
-    @GetMapping("/api/authorize_user")
-    public ResponseEntity<?> authorize(/*@RequestBody UserDtoAuthen userDtoAuthen*/) {
-
-/**
- * аутентификация пользовотеля по данным из запроса (UserDto)
- */
-        try {
-            //authenticationManager проверяет существует пользователь в базе с данным логином и паролем(используется UserService implements UserDetailsService)
-            // если пользователь найден то возврщ. Authentication содержащий все данные о пользаователе
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-//                    userDtoAuthen.getUserLogin(), // имя пользователя
-//                    userDtoAuthen.getPasswordUser()// пароль пользователя
-                    "rita", "123"
-            ));
-            System.out.println(authentication.getName());//имя пользователя ппрошедшего аутентифик
-            System.out.println(authentication.getAuthorities());// роли
-
-            UsersEntity usersEntity = UsersEntity.builder()
-                    .userName(authentication.getName())
-                    .roleUser(authentication.getAuthorities().stream().findAny().orElseGet(null).toString())
-                    .build();
-
-            // генерировать токен с данными User, полученному из БД
-            String token = jwtService.generateJWToken(usersEntity);
-
-            //ответ new JwtDto с token, статус ok
-            return ResponseEntity.ok(new JwtDto(token));
-
-        }
-        catch (BadCredentialsException e) { // если пользователь не найден
-           return new ResponseEntity<>(new ErrorAuthDto(HttpStatus.UNAUTHORIZED.value(), "Неверный логин или пароль"), HttpStatus.UNAUTHORIZED);
-        }
+        return ResponseEntity.ok(userService.getUserById(userId));
     }
 
 
-    @PostMapping("/api/authorize_user")
-    public ResponseEntity<?> authorize(@RequestBody UserDtoAuthen userDtoAuthen) {
+    /**
+     *  Сохранить пользователя
+     */
+    @PostMapping("api/save_user")
+    public ResponseEntity<UserDto> saveUser (@RequestBody UserDto userDto) {
+
+        return ResponseEntity.ok(userService.saveUser(userDto));
+
+    }
+
+
+    /**
+     *  Сохранить пользователя
+     */
+    @PutMapping("api/update_user")
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto) {
+
+        return ResponseEntity.ok(userService.saveUser(userDto));
+
+    }
 
 /**
- * аутентификация пользовотеля по данным из запроса (UserDto)
+ *  получить пользователя по userLogin
  */
-        try {
-            //authenticationManager проверяет существует пользователь в базе с
-            // данным логином и паролем(используется UserService implements UserDetailsService)
-            // если пользователь найден то возврщ. Authentication содержащий все данные о пользаователе
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    userDtoAuthen.getUserLogin(), // имя пользователя
-                    userDtoAuthen.getPasswordUser()// пароль пользователя
-//                    "rita", "123"
-            ));
-            System.out.println(authentication.getName());//имя пользователя ппрошедшего аутентифик
-            System.out.println(authentication.getAuthorities());// роли
+    @PostMapping("api/user/{userLogin}")
+    public ResponseEntity<UserDto> getUserByLogin (@PathVariable("userLogin") String userLogin) {
 
-            UsersEntity usersEntity = UsersEntity.builder()
-                    .userName(authentication.getName())
-                    .roleUser(authentication.getAuthorities().stream().findAny().orElseGet(null).toString())
-                    .build();
+        return ResponseEntity.ok(userService.loadUserByUserLogin(userLogin));
 
-            // генерировать токен с данными User, полученному из БД
-            String token = jwtService.generateJWToken(usersEntity);
-
-            //ответ new JwtDto с token, статус ok
-            return ResponseEntity.ok(new JwtDto(token));
-
-        }
-        catch (BadCredentialsException e) { // если пользователь не найден
-            return new ResponseEntity<>(new ErrorAuthDto(HttpStatus.UNAUTHORIZED.value(), "Неверный логин или пароль"), HttpStatus.UNAUTHORIZED);
-        }
     }
-//        @PreAuthorize("permitAll()")
-        @GetMapping("/api/login")
-        public String loginPage(){
-        return "form login";
-        }
+
+    /**
+     *  получить всех пользователей
+     */
+    @GetMapping("api/allUsers/")
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+
+        return ResponseEntity.ok(userService.getAllUsers());
+
+    }
+
 }

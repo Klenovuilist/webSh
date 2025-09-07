@@ -49,6 +49,9 @@ public class ProductEntity {
     @Column(name = "product_count")
     private String productCount;
 
+    @Column(name = "teg")
+    private String teg;
+
     @Column(name = "product_reserv")
     private int productReserv;
 

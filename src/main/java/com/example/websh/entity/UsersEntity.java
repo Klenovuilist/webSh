@@ -44,6 +44,12 @@ public class UsersEntity {
     @CreationTimestamp
     private LocalDateTime dataCreateUser;
 
+    @Column(name = "boolverify")
+    private boolean boolverify;
+
+    @Column(name = "mail")
+    private String mail;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "userid_productid",
             joinColumns = @JoinColumn(name = "user_id"),
