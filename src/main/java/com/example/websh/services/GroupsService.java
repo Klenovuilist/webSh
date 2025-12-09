@@ -304,7 +304,7 @@ public class GroupsService {
         GroupProductEntity groupChange;
         // группа для изменения
         if (optGroupEntityForChange.isPresent()) {
-            groupChange = optGroupEntityForChange.get();
+               groupChange = optGroupEntityForChange.get();
         } else {
             return;
         }
@@ -323,16 +323,16 @@ public class GroupsService {
 
       //Обновляем родителя если:
         if (newParrentId != null && ! newParrentId.equals(groupId)) {
-            // новый родитель из бд
+            // новый родитель группы из бд
             GroupProductEntity newParrent = entityList.stream()
                     .filter(entity -> entity.getGroupId().equals(newParrentId))
                     .findFirst().get();
 
-            UUID currentParrentUUID = newParrent.getParrentId(); //UUiD родителя текущего родителя
-            UUID currentChildUUID = newParrent.getGroupId();  //UUiD текщей группы
+            UUID currentParrentUUID = newParrent.getParrentId(); //UUiD родителя нового родителя
+            UUID currentChildUUID = newParrent.getGroupId();  //UUiD нового родителя
             GroupProductEntity currentParrent = newParrent; //текущий родитель
             GroupProductEntity currentChild = newParrent; //текущий родитель
-            boolean inOneGroup = false;   // изменяемая группа оказывается в цепочке нового родителя
+            boolean inOneGroup = false;   // изменяемая группа оказывается в цепочке групп нового родителя
 
             // проход по цепочке от нового родителя до корневого элемента
             // если по пути будет
@@ -359,7 +359,7 @@ public class GroupsService {
                 }
             }// end while
 
-            //назначение дочернему элементу изменяемой группы нового родителя
+            //назначение дочернему элементу изменяемой группы нового родителя если в одной цепочке
             if (inOneGroup) {
                 currentChild.setParrentId(groupChange.getParrentId());
                 currentChild.setLevelGroup(groupChange.getLevelGroup());

@@ -1,10 +1,7 @@
 package com.example.websh.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@EqualsAndHashCode(of = {"productId"})
 @Table(name = "products")
 
 public class ProductEntity {
@@ -52,6 +50,9 @@ public class ProductEntity {
     @Column(name = "teg")
     private String teg;
 
+    @Column(name = "view_image")
+    private String view_image;
+
     @Column(name = "product_reserv")
     private int productReserv;
 
@@ -60,6 +61,9 @@ public class ProductEntity {
 
     @Column(name = "id_groups")
     private UUID groupsId;
+
+    @Column(name = "is_load")
+    private String isLoad;
 
 
     @Column(name = "data_create_product")

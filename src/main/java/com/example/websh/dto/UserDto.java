@@ -1,5 +1,10 @@
 package com.example.websh.dto;
 
+import com.example.websh.entity.ProductEntity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,6 +12,7 @@ import lombok.NoArgsConstructor;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -34,6 +40,8 @@ public class UserDto {
     private String mail;
 
     private String DataCreateParsing;
+
+   private List<ProductDto> productsDTO;
 
 
 }

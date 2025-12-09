@@ -50,6 +50,23 @@ databaseChangeLog:
       author: EV
       file: changelog/changeset/12-alter-product_teg.sql
 
+  - include:
+      author: EV
+      file: changelog/changeset/14-alter-product_view_Image.sql
+
+  - include:
+      author: EV
+      file: changelog/changeset/15-alter-file3Dto-addColumn-fileId.sql
+
+
+  - include:
+      author: EV
+      file: changelog/changeset/16-alter-product_isLoad.sql
+
+  - include:
+      author: EV
+      file: changelog/changeset/17-newTable-Counter.sql
+
 
 
 #

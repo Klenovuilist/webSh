@@ -6,6 +6,7 @@ import com.example.websh.dto.ProductDto;
 import com.example.websh.services.GroupsService;
 import com.example.websh.services.MainInfoService;
 import com.example.websh.services.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -282,7 +283,7 @@ public class AdminController {
     }
 
     /**
-     * Получение листа имен картинок для продукта
+     * Получение листа имен картинок для продукта(отсортированного)
      */
     @PostMapping("/api/ListNameImageProduct/{id}")
     public ResponseEntity<List<String>> getListNameImageProductById(@PathVariable("id") String uuid) {
@@ -383,4 +384,25 @@ public class AdminController {
 
         return ResponseEntity.ok(productService.getListProductByIdGroup(null));
     }
+
+    /**
+     * Изменить имя картинки продукта
+     */
+    @PostMapping("api/changeNameImage/{product_Id}")
+    public ResponseEntity<?> changeNameImage(@PathVariable("product_Id") String productId
+            , @RequestHeader("newName") String newName
+            , @RequestHeader("currentNameImage")String currentNameImage)
+
+
+
+    {
+        productService.changeNameImage(productId, currentNameImage, newName);
+        return ResponseEntity.ok().build();
+    }
+
+
+
+
+
+
 }
